@@ -248,8 +248,8 @@ impl LevelStyles {
 }
 
 impl Default for LevelStyles {
-    fn default() -> LevelStyles {
-        LevelStyles([
+    fn default() -> Self {
+        Self([
             Style::builder().bg_color(Color::Red).bold().build(), // Critical
             Style::builder().color(Color::Red).bold().build(),    // Error
             Style::builder().color(Color::Yellow).bold().build(), // Warn

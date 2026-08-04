@@ -8,7 +8,7 @@ use crate::{formatter::FormatterContext, sync::*, Record};
 static LOCAL_TIME_CACHER: Lazy<Mutex<LocalTimeCacher>> =
     Lazy::new(|| Mutex::new(LocalTimeCacher::new()));
 
-pub(crate) fn fmt_with_time<R, F>(ctx: &mut FormatterContext, record: &Record, mut callback: F) -> R
+pub fn fmt_with_time<R, F>(ctx: &mut FormatterContext, record: &Record, mut callback: F) -> R
 where
     F: FnMut(TimeDate) -> R,
 {
@@ -20,12 +20,12 @@ where
 }
 
 #[derive(Clone)]
-pub(crate) struct LocalTimeCacher {
+pub struct LocalTimeCacher {
     stored_key: u64,
     cache_values: Option<CacheValues>,
 }
 
-pub(crate) struct TimeDate<'a> {
+pub struct TimeDate<'a> {
     cached: &'a mut CacheValues,
     nanosecond: u32,
     millisecond: u32,
@@ -58,15 +58,15 @@ struct CacheValues {
 }
 
 #[derive(Clone, Copy, Eq, PartialEq)]
-pub(crate) struct MultiName<T> {
+pub struct MultiName<T> {
     pub(crate) short: T,
     pub(crate) full: T,
 }
 
 impl LocalTimeCacher {
     #[must_use]
-    fn new() -> LocalTimeCacher {
-        LocalTimeCacher {
+    fn new() -> Self {
+        Self {
             stored_key: 0,
             cache_values: None,
         }

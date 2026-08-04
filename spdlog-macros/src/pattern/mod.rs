@@ -104,7 +104,7 @@ impl Parse for Pattern {
             )
         })?;
 
-        Ok(Pattern {
+        Ok(Self {
             template: Some((template_lit_leaked, template)),
             custom_patterns,
         })
@@ -138,7 +138,7 @@ impl Parse for RuntimePattern {
         input.parse::<Option<Token![,]>>()?;
         let custom_patterns = input.parse()?;
 
-        let ret = RuntimePattern {
+        let ret = Self {
             template: template_expr,
             custom_patterns,
         };

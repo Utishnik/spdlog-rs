@@ -34,6 +34,6 @@ pub type StringBufInner = flexible_string::FlexibleString<STACK_SIZE>;
 pub type StringBufInner = String;
 
 #[allow(dead_code)]
-pub(crate) const STACK_SIZE: usize = 256;
+pub const STACK_SIZE: usize = 256;
 #[allow(dead_code)]
-pub(crate) const RESERVE_SIZE: usize = STACK_SIZE / 2;
+pub const RESERVE_SIZE: usize = STACK_SIZE / 2;

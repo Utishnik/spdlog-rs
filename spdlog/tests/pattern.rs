@@ -148,6 +148,7 @@ impl Sink for MockSink {
             .format(record, &mut buf, &mut ctx)
             .unwrap();
         *self.last_msg.lock().unwrap() = Some((String::from(buf.as_str()), ctx.style_range()));
+        drop(ctx);
         Ok(())
     }
 

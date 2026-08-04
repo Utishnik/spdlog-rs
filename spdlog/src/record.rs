@@ -44,8 +44,8 @@ impl<'a> Record<'a> {
         srcloc: Option<SourceLocation>,
         logger_name: Option<&'a str>,
         kvs: &'a [(kv::Key<'a>, kv::Value<'a>)],
-    ) -> Record<'a> {
-        Record {
+    ) -> Self {
+        Self {
             logger_name,
             payload: payload.into(),
             kvs: Cow::Borrowed(kvs),

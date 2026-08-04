@@ -19,3 +19,8 @@ impl_trait_in_params = "warn"
 must_use_candidate = "warn"
 unused_result_ok = "warn"
 unused_trait_names = "warn"
+
+[profile.dev]
+opt-level = "s"      
+lto = true           
+codegen-units = 16

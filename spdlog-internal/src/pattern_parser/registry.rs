@@ -51,8 +51,14 @@ impl<F> PatternRegistry<F> {
     pub fn find(&self, find_custom: bool, placeholder: impl AsRef<str>) -> Result<&PatternKind<F>> {
         let placeholder = placeholder.as_ref();
 
-        match self.formatters.get(placeholder) {
-            Some(found) => match (found, find_custom) {
+        self.formatters.get(placeholder).map_or_else(
+            || {
+                Err(Error::Template(TemplateError::UnknownPatternReference {
+                    is_custom: find_custom,
+                    placeholder: placeholder.into(),
+                }))
+            },
+            |found| match (found, find_custom) {
                 (PatternKind::BuiltIn(_), false) => Ok(found),
                 (PatternKind::Custom { .. }, true) => Ok(found),
                 (PatternKind::BuiltIn(_), true) => {
@@ -68,11 +74,7 @@ impl<F> PatternRegistry<F> {
                     }))
                 }
             },
-            None => Err(Error::Template(TemplateError::UnknownPatternReference {
-                is_custom: find_custom,
-                placeholder: placeholder.into(),
-            })),
-        }
+        )
     }
 }
 

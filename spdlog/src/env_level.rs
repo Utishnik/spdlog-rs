@@ -7,12 +7,12 @@ use std::{
 
 use crate::{sync::*, LevelFilter};
 
-pub(crate) type EnvLevel = HashMap<EnvLevelLogger, LevelFilter>;
+pub type EnvLevel = HashMap<EnvLevelLogger, LevelFilter>;
 
 static ENV_LEVEL: Lazy<RwLock<Option<EnvLevel>>> = Lazy::new(|| RwLock::new(None));
 
 #[derive(Clone, Eq, PartialEq, Hash, Debug)]
-pub(crate) enum EnvLevelLogger {
+pub enum EnvLevelLogger {
     Default,
     Named(String),
     Unnamed,
@@ -37,8 +37,8 @@ impl StdError for EnvLevelError {}
 impl fmt::Display for EnvLevelError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            EnvLevelError::FetchEnvVar(err) => write!(f, "fetch environment variable error: {err}"),
-            EnvLevelError::ParseEnvVar(description) => {
+            Self::FetchEnvVar(err) => write!(f, "fetch environment variable error: {err}"),
+            Self::ParseEnvVar(description) => {
                 write!(f, "parse environment variable error: {description}")
             }
         }
@@ -49,30 +49,27 @@ impl EnvLevelLogger {
     #[must_use]
     fn from_key(logger_name: &str) -> Self {
         if logger_name.is_empty() {
-            EnvLevelLogger::Unnamed
+            Self::Unnamed
         } else if logger_name == "*" {
-            EnvLevelLogger::AllExceptDefault
+            Self::AllExceptDefault
         } else {
-            EnvLevelLogger::Named(logger_name.into())
+            Self::Named(logger_name.into())
         }
     }
 
     #[must_use]
     fn from_logger(logger_name: Option<&str>) -> Self {
-        match logger_name {
-            None => Self::Unnamed,
-            Some(name) => Self::Named(name.into()),
-        }
+        logger_name.map_or(Self::Unnamed, |name| Self::Named(name.into()))
     }
 }
 
-pub(crate) fn from_str(var: &str) -> Result<(), EnvLevelError> {
+pub fn from_str(var: &str) -> Result<(), EnvLevelError> {
     let env_level = from_str_inner(var)?;
     *ENV_LEVEL.write_expect() = Some(env_level);
     Ok(())
 }
 
-pub(crate) fn from_str_inner(var: &str) -> Result<EnvLevel, EnvLevelError> {
+pub fn from_str_inner(var: &str) -> Result<EnvLevel, EnvLevelError> {
     (|| {
         let mut env_level = EnvLevel::new();
 
@@ -120,18 +117,18 @@ pub(crate) fn from_str_inner(var: &str) -> Result<EnvLevel, EnvLevelError> {
 }
 
 #[must_use]
-pub(crate) fn logger_level(kind: LoggerKind) -> Option<LevelFilter> {
+pub fn logger_level(kind: LoggerKind) -> Option<LevelFilter> {
     logger_level_inner(ENV_LEVEL.read_expect().as_ref()?, kind)
 }
 
 #[derive(Clone, Eq, PartialEq, Debug)]
-pub(crate) enum LoggerKind<'a> {
+pub enum LoggerKind<'a> {
     Default,
     Other(Option<&'a str>),
 }
 
 #[must_use]
-pub(crate) fn logger_level_inner(env_level: &EnvLevel, kind: LoggerKind) -> Option<LevelFilter> {
+pub fn logger_level_inner(env_level: &EnvLevel, kind: LoggerKind) -> Option<LevelFilter> {
     let level = match kind {
         LoggerKind::Default => env_level.get(&EnvLevelLogger::Default)?,
         LoggerKind::Other(logger_name) => env_level
